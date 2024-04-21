@@ -97,7 +97,7 @@ pexpect
 pickleshare
 pillow==10.3.0
 platformdirs
-playsound==1.3.0
+playsound
 pluggy
 ply==3.11
 prometheus-client
