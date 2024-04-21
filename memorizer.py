@@ -49,7 +49,7 @@ def sayitingreek(text):
         print("HTTPError", e)
 
     shutil.copyfile(filename, 'sayit.mp3')
-    playsound('C:\\Users\\35796\\sayit.mp3', True)
+    playsound('sayit.mp3', True)
     
 def do_reload():
     with open('dict.csv', newline='', encoding='utf-8') as csvfile:
