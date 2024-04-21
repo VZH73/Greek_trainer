@@ -6,7 +6,7 @@ from urllib.request import urlopen
 import re
 from playsound import playsound
 import shutil
-import os
+import pickle
 
 def sayitingreek(text):
 
@@ -39,18 +39,18 @@ def sayitingreek(text):
     filename = 'voice.mp3'
     
     try:
-        response = urllib.request.urlopen(req)
+        response = urlopen(req)
         page = response.read()
         match = re.search(r'http://(.*)mp3', page.decode('utf-8'))
         if match:
+            #mp3play.load(match.group()).play()
+            #playsound(match.group(), True)
             urllib.request.urlretrieve(match.group(), filename)
-    except urllib.error.URLError as e:
-        print("Error", e)
-    except urllib.error.HTTPError as e:
-        print("HTTPError", e)
+            shutil.copyfile(filename, 'say.mp3')
+            playsound('C:\\Users\\35796\\say.mp3', True)
+    except:
+        return
 
-    shutil.copyfile(filename, 'sayit.mp3')
-    playsound(os.path.join(os.getcwd(),'sayit.mp3'), True)
     
 def do_reload():
     with open('dict.csv', newline='', encoding='utf-8') as csvfile:
@@ -61,6 +61,11 @@ if 'translations' not in st.session_state:
        
 if 'phrase_rating' not in st.session_state:
     st.session_state.phrase_rating = dict()
+else:
+    try:
+        st.session_state.phrase_rating = pickle.load(open("phrase_rating.p", "rb"))
+    except:
+        st.session_state.phrase_rating = st.session_state.phrase_rating 
     
 if 'difficulty_level' not in st.session_state:
     st.session_state.difficulty_level = 50
@@ -73,6 +78,7 @@ if 'incorrect_answers' not in st.session_state:
 
 if 'translation_input' not in st.session_state:
     st.session_state.translation_input = ''
+    
     
 def get_safe(k):
     try:
@@ -112,15 +118,17 @@ def get_random_translation():
         return res[0], res[1], words
 
 def put_word(w):
-    if w in st.session_state.translation_input:
-        st.session_state.translation_input = st.session_state.translation_input.replace(w,'')
-        st.session_state.translation_input = st.session_state.translation_input.replace('  ','')
-    else:
-        st.session_state.translation_input = (st.session_state.translation_input + ' ' + w).strip()
+    st.session_state.translation_input = (st.session_state.translation_input + ' ' + w).strip()
     
     
 def put_word2(w):
     st.session_state.translation_input = (st.session_state.translation_input + ' ' + st.session_state[w]).strip()
+
+def clear_input():
+    try:
+        st.session_state.translation_input = st.session_state.translation_input.replace(st.session_state.translation_input.split(' ')[-1],'').strip()
+    except:
+        return
     
 def submit():
     st.session_state.this_original = original 
@@ -136,6 +144,9 @@ def submit():
             st.session_state.phrase_rating[original] += 1
         except:
             st.session_state.phrase_rating[original] = 1
+
+        # To save a dictionary to a pickle file:
+        pickle.dump(st.session_state.phrase_rating, open("phrase_rating.p", "wb"))
     else:
         st.session_state.incorrect_answers += 1
 
@@ -166,19 +177,23 @@ st.subheader('Phrase translation')
 
 original, translation, words = st.session_state.random_pair
 
-col1,col2 = st.columns(2)
+col1,col2 = st.columns([20,1])
 
 col1.write('# ' + original) 
-col2.button(f':loud_sound:',on_click=sayitingreek, args=[original])
+col2.button(':loud_sound:',on_click=sayitingreek, args=[original])
 
 with st.sidebar:
     difficulty_level = st.slider("Select dificulty level",0,100,70)
     st.button('Reload dict.csv', on_click=do_reload)
     st.write(f'Length of the dict: {len(st.session_state.translations)}')
+    st.write(f'Coverage of the dict: {round(len(st.session_state.phrase_rating) * 50 / len(st.session_state.translations),2)}%')
    
+
 st.text_input('Translation:', key='translation_input', on_change=submit, disabled=True)
 
-st.button('Check', on_click=check_pressed)
+col1,col2,col3 = st.columns([2,1,15])
+col1.button('Check', on_click=check_pressed)
+col2.button(':scissors:',on_click=clear_input)
 
 col_l = []
 for wrd in words:
