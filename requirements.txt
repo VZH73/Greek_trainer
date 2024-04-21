@@ -125,7 +125,6 @@ python-dateutil
 python-json-logger
 python-lsp-black
 python-lsp-jsonrpc
-python-lsp-server
 pywin32==305.1
 pywin32-ctypes
 pywinpty
