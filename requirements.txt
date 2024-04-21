@@ -128,7 +128,6 @@ python-lsp-jsonrpc
 python-lsp-server
 python-slugify
 pytoolconfig
-pytz
 pywin32==305.1
 pywin32-ctypes
 pywinpty
