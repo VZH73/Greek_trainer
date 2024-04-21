@@ -6,6 +6,7 @@ from urllib.request import urlopen
 import re
 from playsound import playsound
 import shutil
+import os
 
 def sayitingreek(text):
 
@@ -49,7 +50,7 @@ def sayitingreek(text):
         print("HTTPError", e)
 
     shutil.copyfile(filename, 'sayit.mp3')
-    playsound('sayit.mp3', True)
+    playsound(os.path.join(os.getcwd(),'sayit.mp3'), True)
     
 def do_reload():
     with open('dict.csv', newline='', encoding='utf-8') as csvfile:
