@@ -4,9 +4,10 @@ import random
 import urllib
 from urllib.request import urlopen
 import re
-from playsound import playsound
-import shutil
 import pickle
+import pygame
+import requests
+from io import BytesIO
 
 def sayitingreek(text):
 
@@ -36,18 +37,28 @@ def sayitingreek(text):
 
     req = urllib.request.Request(url, data, headers)
 
-    filename = 'voice.mp3'
-    
     try:
         response = urlopen(req)
         page = response.read()
         match = re.search(r'http://(.*)mp3', page.decode('utf-8'))
         if match:
-            #mp3play.load(match.group()).play()
-            #playsound(match.group(), True)
-            urllib.request.urlretrieve(match.group(), filename)
-            shutil.copyfile(filename, 'say.mp3')
-            playsound('C:\\Users\\35796\\say.mp3', True)
+            pygame.init()
+            
+            url = match.group()
+            
+            # Fetch the MP3 file from the URL
+            response = requests.get(url)
+            mp3_data = BytesIO(response.content)
+            
+            # Load the MP3 file into pygame
+            pygame.mixer.music.load(mp3_data)
+            
+            # Play the MP3 file
+            pygame.mixer.music.play()
+            
+            # Wait until the music finishes playing
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)            
     except:
         return
 
