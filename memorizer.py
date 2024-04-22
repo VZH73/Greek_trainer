@@ -235,12 +235,12 @@ if 'correct_translation' not in st.session_state:
 if 'check' not in st.session_state:
     st.session_state.check = 1
 
-def fix_mobile_columns():    
-    st.write('''<style>
+def fix_mobile_columns(col):    
+    st.write(f'''<style>
     [data-testid="column"] {
-        width: calc(33.3333% - 1rem) !important;
-        flex: 1 1 calc(33.3333% - 1rem) !important;
-        min-width: calc(33.3333% - 1rem) !important;
+        width: calc({100/col}% - 1rem) !important;
+        flex: 1 1 calc({100/col}% - 1rem) !important;
+        min-width: calc({100/col}% - 1rem) !important;
     }
     </style>''', unsafe_allow_html=True)
 	
@@ -301,7 +301,7 @@ st.markdown("""
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
-    if sum(col_l) > (60 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
+    if sum(col_l) > (50 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
         cols = st.columns([1 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
@@ -316,8 +316,9 @@ for wrd in words:
             else:
                 cols[words.index(w)].button(w, key=w,  on_click=put_word, args=[w])
         words = words[words.index(wrd)+1:]
+        fix_mobile_columns(len(col_l))
         col_l = []
-        fix_mobile_columns()
+        
             
 st.write(f'Previous Phrase: {st.session_state.this_original}')
 st.write(f'Correct Translation: {st.session_state.correct_translation}')
