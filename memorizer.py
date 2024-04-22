@@ -240,6 +240,8 @@ def fix_mobile_columns(col):
         min-width: fit-content !important;
     }
     </style>''', unsafe_allow_html=True)
+
+st.write(screen_width)
 if screen_width > 500:
     st.write("""
     # Greek trainer
