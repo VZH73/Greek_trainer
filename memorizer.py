@@ -11,7 +11,7 @@ from streamlit_js_eval import streamlit_js_eval
 
 st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
-#st.write(f"Screen width is {streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')}")
+st.write(f"Screen width is {streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')}")
 
 
 if 'logged_in' not in st.session_state:
