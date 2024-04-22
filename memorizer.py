@@ -31,7 +31,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
              password TEXT NOT NULL)''')
 
 # Function to register a new user
-def register(username, email, password):
+def register(username, password):
     hashed_password = pbkdf2_sha256.hash(password)
     c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
     conn.commit()
@@ -40,7 +40,7 @@ def register(username, email, password):
 def login(username, password):
     c.execute("SELECT * FROM users WHERE username=?", (username,))
     user = c.fetchone()
-    if user and pbkdf2_sha256.verify(password, user[3]):
+    if user and pbkdf2_sha256.verify(password, user[2]):
         st.success("Login successful!")
         st.write(f"Welcome back, {username}!")
         st.session_state.logged_in = True
