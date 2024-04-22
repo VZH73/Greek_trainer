@@ -281,7 +281,7 @@ with stylable_container(key="my_unique_button",css_styles="""
     }
 }
 """,):
-    col1.button('Check', on_click=check_pressed)
+    st.button('Check', on_click=check_pressed)
 col2.button(':scissors:',on_click=clear_input)
 
 st.markdown("""
