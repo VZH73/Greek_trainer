@@ -8,6 +8,8 @@ import pickle
 import sqlite3
 from passlib.hash import pbkdf2_sha256
 from streamlit_js_eval import streamlit_js_eval
+from streamlit_extras.stylable_container import stylable_container
+
 
 st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
@@ -272,13 +274,14 @@ with st.sidebar:
 st.text_input('Translation:', key='translation_input', on_change=submit, disabled=True)
 
 col1,col2,col3 = st.columns([2,1,15])
-m = st.markdown("""
-<style>
-div.stButton > button:first-child {
-    background-color: rgb(204, 49, 49);
+with stylable_container(key="my_unique_button",css_styles="""
+{
+    [data-testid="baseButton-secondary"] {
+        background-color: red;
+    }
 }
-</style>""", unsafe_allow_html=True)
-col1.button('Check', on_click=check_pressed)
+""",):
+    col1.button('Check', on_click=check_pressed)
 col2.button(':scissors:',on_click=clear_input)
 
 st.markdown("""
