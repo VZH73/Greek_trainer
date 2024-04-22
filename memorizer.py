@@ -169,7 +169,7 @@ def get_random_translation():
 
     if greek_first:
         res =  t1, t2, t2_1.strip() + ' ' + t2_2.strip() + ' ' + t2_3.strip()
-	sayitingreek(t1)
+        sayitingreek(t1)
     else:
         res = t2, t1, t1_1.strip() + ' ' + t1_2.strip() + ' ' + t1_3.strip()
         
@@ -185,7 +185,6 @@ def get_random_translation():
 
 def put_word(w):
     st.session_state.translation_input = (st.session_state.translation_input + ' ' + w).strip()
-    
     
 def put_word2(w):
     st.session_state.translation_input = (st.session_state.translation_input + ' ' + st.session_state[w]).strip()
