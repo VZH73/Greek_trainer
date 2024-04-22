@@ -1,3 +1,5 @@
-pygame
+passlib
 urllib3
 streamlit==1.33.0
+sqlite3
+streamlit_js_eval
