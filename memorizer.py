@@ -13,7 +13,7 @@ st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
 screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
 
-st.write(f"Screen width is {screen_width}")
+#st.write(f"Screen width is {screen_width}")
 
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -235,6 +235,15 @@ if 'correct_translation' not in st.session_state:
 if 'check' not in st.session_state:
     st.session_state.check = 1
 
+def fix_mobile_columns():    
+    st.write('''<style>
+    [data-testid="column"] {
+        width: calc(33.3333% - 1rem) !important;
+        flex: 1 1 calc(33.3333% - 1rem) !important;
+        min-width: calc(33.3333% - 1rem) !important;
+    }
+    </style>''', unsafe_allow_html=True)
+	
 st.write("""
 # Greek trainer
 This app helps to memorize **Greek** phrases!""")
@@ -308,6 +317,7 @@ for wrd in words:
                 cols[words.index(w)].button(w, key=w,  on_click=put_word, args=[w])
         words = words[words.index(wrd)+1:]
         col_l = []
+	fix_mobile_columns()
             
 st.write(f'Previous Phrase: {st.session_state.this_original}')
 st.write(f'Correct Translation: {st.session_state.correct_translation}')
