@@ -5,10 +5,80 @@ import urllib
 from urllib.request import urlopen
 import re
 import pickle
-import pygame
-import requests
-from io import BytesIO
+import sqlite3
+from passlib.hash import pbkdf2_sha256
+from streamlit_js_eval import streamlit_js_eval
 
+st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
+
+#st.write(f"Screen width is {streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')}")
+
+
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+if 'username' not in st.session_state:
+    st.session_state.username = ''
+    
+# Create or connect to the SQLite database
+conn = sqlite3.connect('users.db', check_same_thread=False)
+c = conn.cursor()
+
+# Create users table if it doesn't exist
+c.execute('''CREATE TABLE IF NOT EXISTS users (
+             id INTEGER PRIMARY KEY,
+             username TEXT NOT NULL,
+             password TEXT NOT NULL)''')
+
+# Function to register a new user
+def register(username, email, password):
+    hashed_password = pbkdf2_sha256.hash(password)
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+    conn.commit()
+
+# Function to authenticate user
+def login(username, password):
+    c.execute("SELECT * FROM users WHERE username=?", (username,))
+    user = c.fetchone()
+    if user and pbkdf2_sha256.verify(password, user[3]):
+        st.success("Login successful!")
+        st.write(f"Welcome back, {username}!")
+        st.session_state.logged_in = True
+        st.session_state.username = username
+    else:
+        st.error("Invalid username or password.")
+        
+def logout():
+    st.session_state.logged_in = False
+    st.session_state.username = ''
+
+# User registration form
+def register_form():
+    st.title("User Registration")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    confirm_password = st.text_input("Confirm Password", type="password")
+
+    if st.button("Register"):
+        if password == confirm_password:
+            register(username, password)
+            st.success("Registration successful. You can now login.")
+        else:
+            st.error("Passwords do not match.")
+
+# User login form
+def login_form():
+    st.title("User Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    st.button("Login", on_click=login, args=[username, password] )
+            
+
+
+if 'mp3_url' not in st.session_state:
+    st.session_state.mp3_url = ''
+    
 def sayitingreek(text):
 
     url = "http://vaassl3.acapela-group.com/Services/Synthesizer"
@@ -42,23 +112,9 @@ def sayitingreek(text):
         page = response.read()
         match = re.search(r'http://(.*)mp3', page.decode('utf-8'))
         if match:
-            pygame.init()
             
-            url = match.group()
+            st.audio(match.group(), format="audio/mpeg", loop=False)
             
-            # Fetch the MP3 file from the URL
-            response = requests.get(url)
-            mp3_data = BytesIO(response.content)
-            
-            # Load the MP3 file into pygame
-            pygame.mixer.music.load(mp3_data)
-            
-            # Play the MP3 file
-            pygame.mixer.music.play()
-            
-            # Wait until the music finishes playing
-            while pygame.mixer.music.get_busy():
-                pygame.time.Clock().tick(10)            
     except:
         return
 
@@ -74,7 +130,7 @@ if 'phrase_rating' not in st.session_state:
     st.session_state.phrase_rating = dict()
 else:
     try:
-        st.session_state.phrase_rating = pickle.load(open("phrase_rating.p", "rb"))
+        st.session_state.phrase_rating = pickle.load(open(f"phrase_rating_{st.session_state.username}.p", "rb"))
     except:
         st.session_state.phrase_rating = st.session_state.phrase_rating 
     
@@ -104,29 +160,32 @@ def get_random_translation():
         avg_rating = 1
 
     while True:
-        t1, t2     = random.choice(st.session_state.translations)       
-        t1_1, t2_1 = random.choice(st.session_state.translations)       
-        t1_2, t2_2 = random.choice(st.session_state.translations)       
-        t1_3, t2_3 = random.choice(st.session_state.translations)       
+        t1, t2 = random.choice(st.session_state.translations)       
         
+        greek_first = (get_safe(t1) < avg_rating)
+        russian_first = (get_safe(t2) < avg_rating)
+        
+        if greek_first or russian_first:
+            break
 
-        if (get_safe(t1) >= avg_rating) and (get_safe(t2) <= avg_rating + 1):
-            res = t2, t1, t1_1.strip() + ' ' + t1_2.strip() + ' ' + t1_3.strip()
+    t1_1, t2_1 = random.choice(st.session_state.translations)       
+    t1_2, t2_2 = random.choice(st.session_state.translations)       
+    t1_3, t2_3 = random.choice(st.session_state.translations)       
 
-        if (get_safe(t1) < avg_rating):
-            res =  t1, t2, t2_1.strip() + ' ' + t2_2.strip() + ' ' + t2_3.strip()
-        else:
-            res = t2, t1, t1_1.strip() + ' ' + t1_2.strip() + ' ' + t1_3.strip()
-
-        base_words  = [w.lower() for w in res[1].strip().split(' ')]
-        extra_words = list(set([w.lower() for w in res[2].strip().split(' ')]))
-        extra_words = extra_words[:int(len(extra_words) * st.session_state.difficulty_level / 100)]
+    if greek_first:
+        res =  t1, t2, t2_1.strip() + ' ' + t2_2.strip() + ' ' + t2_3.strip()
+    else:
+        res = t2, t1, t1_1.strip() + ' ' + t1_2.strip() + ' ' + t1_3.strip()
         
-        words = list(set(base_words + extra_words))
-        
-        random.shuffle(words)
-        
-        return res[0], res[1], words
+    base_words  = [w.lower() for w in res[1].strip().split(' ')]
+    extra_words = list(set([w.lower() for w in res[2].strip().split(' ')]))
+    extra_words = extra_words[:int(len(extra_words) * st.session_state.difficulty_level / 100)]
+    
+    words = list(set(base_words + extra_words))
+    
+    random.shuffle(words)
+    
+    return res[0], res[1], words, greek_first
 
 def put_word(w):
     st.session_state.translation_input = (st.session_state.translation_input + ' ' + w).strip()
@@ -157,7 +216,7 @@ def submit():
             st.session_state.phrase_rating[original] = 1
 
         # To save a dictionary to a pickle file:
-        pickle.dump(st.session_state.phrase_rating, open("phrase_rating.p", "wb"))
+        pickle.dump(st.session_state.phrase_rating, open(f"phrase_rating_{st.session_state.username}.p", "wb"))
     else:
         st.session_state.incorrect_answers += 1
 
@@ -186,14 +245,26 @@ This app helps to memorize **Greek** phrases!""")
 
 st.subheader('Phrase translation')
 
-original, translation, words = st.session_state.random_pair
+original, translation, words, greek_first = st.session_state.random_pair
 
-col1,col2 = st.columns([20,1])
+st.write('# ' + original) 
 
-col1.write('# ' + original) 
-col2.button(':loud_sound:',on_click=sayitingreek, args=[original])
-
+if greek_first:
+    sayitingreek(original)
+    
 with st.sidebar:
+    if st.session_state.logged_in:
+        st.title("Logged In")
+        st.write(f"You are logged in, {st.session_state.username}!")
+        st.button("Logout", on_click=logout)
+    else:
+        page = st.radio("Go to", ["Login", "Register"])
+        
+        if page == "Login":
+            login_form()
+        elif page == "Register":
+            register_form()    
+        
     difficulty_level = st.slider("Select dificulty level",0,100,70)
     st.button('Reload dict.csv', on_click=do_reload)
     st.write(f'Length of the dict: {len(st.session_state.translations)}')
@@ -209,8 +280,8 @@ col2.button(':scissors:',on_click=clear_input)
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
-    if sum(col_l) > 30 or (words.index(wrd)+1 == len(words)):
-        cols = st.columns([i + 5 for i in col_l])
+    if sum(col_l) > 40 or (words.index(wrd)+1 == len(words)):
+        cols = st.columns([i + 4 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
             word_rating = 0
