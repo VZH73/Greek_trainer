@@ -13,8 +13,6 @@ st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
 screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
 
-#st.write(f"Screen width is {screen_width}")
-
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
@@ -232,7 +230,8 @@ if 'correct_translation' not in st.session_state:
 if 'check' not in st.session_state:
     st.session_state.check = 1
 
-def fix_mobile_columns(col):    
+def fix_mobile_columns(col):   
+    st.write(col)
     st.write('''<style>
     [data-testid="column"] {
         width: calc(''' + str(100/col) + '''% - 1rem) !important;
@@ -241,7 +240,6 @@ def fix_mobile_columns(col):
     }
     </style>''', unsafe_allow_html=True)
 
-st.write(screen_width)
 if screen_width > 500:
     st.write("""
     # Greek trainer
