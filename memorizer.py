@@ -273,7 +273,7 @@ col2.button(':scissors:',on_click=clear_input)
 st.write('''<style>
 [data-testid="column"] {
     width: fit-content !important;
-    flex: 1 1 calc(33.3333% - 1rem) !important;
+    flex: 1 1 calc(20% - 1rem) !important;
     min-width: fit-content !important;
 }
 </style>''', unsafe_allow_html=True)
