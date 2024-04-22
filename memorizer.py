@@ -231,7 +231,6 @@ if 'check' not in st.session_state:
     st.session_state.check = 1
 
 def fix_mobile_columns(col):   
-    st.write(col)
     st.write('''<style>
     [data-testid="column"] {
         width: calc(''' + str(100/col) + '''% - 1rem) !important;
@@ -290,7 +289,7 @@ st.markdown("""
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
-    if sum(col_l) > (40 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
+    if sum(col_l) > (45 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
         cols = st.columns([1 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
