@@ -74,8 +74,6 @@ def login_form():
 
     st.button("Login", on_click=login, args=[username, password] )
             
-
-
 if 'mp3_url' not in st.session_state:
     st.session_state.mp3_url = ''
     
@@ -111,13 +109,10 @@ def sayitingreek(text):
         response = urlopen(req)
         page = response.read()
         match = re.search(r'http://(.*)mp3', page.decode('utf-8'))
-        if match:
-            
-            st.audio(match.group(), format="audio/mpeg", loop=False)
-            
+        if match: 
+	    st.session_state.mp3_url = match.group()
     except:
         return
-
     
 def do_reload():
     with open('dict.csv', newline='', encoding='utf-8') as csvfile:
@@ -174,6 +169,7 @@ def get_random_translation():
 
     if greek_first:
         res =  t1, t2, t2_1.strip() + ' ' + t2_2.strip() + ' ' + t2_3.strip()
+	sayitingreek(t1)
     else:
         res = t2, t1, t1_1.strip() + ' ' + t1_2.strip() + ' ' + t1_3.strip()
         
@@ -222,7 +218,7 @@ def submit():
 
 def check_pressed():
     submit()
-    st.session_state.random_pair = get_random_translation()
+    st.session_state.random_pair = get_random_translation()   	
             
 if 'random_pair' not in st.session_state:
     st.session_state.random_pair = get_random_translation()
@@ -248,9 +244,7 @@ st.subheader('Phrase translation')
 original, translation, words, greek_first = st.session_state.random_pair
 
 st.write('# ' + original) 
-
-if greek_first:
-    sayitingreek(original)
+st.audio(st.session_state.mp3_url, format="audio/mpeg", loop=False)
     
 with st.sidebar:
     if st.session_state.logged_in:
@@ -269,7 +263,6 @@ with st.sidebar:
     st.button('Reload dict.csv', on_click=do_reload)
     st.write(f'Length of the dict: {len(st.session_state.translations)}')
     st.write(f'Coverage of the dict: {round(len(st.session_state.phrase_rating) * 50 / len(st.session_state.translations),2)}%')
-   
 
 st.text_input('Translation:', key='translation_input', on_change=submit, disabled=True)
 
