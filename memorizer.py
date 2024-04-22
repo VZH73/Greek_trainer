@@ -269,11 +269,22 @@ col1,col2,col3 = st.columns([2,1,15])
 col1.button('Check', on_click=check_pressed)
 col2.button(':scissors:',on_click=clear_input)
 
+st.markdown("""
+            <style>
+                div[data-testid="column"] {
+                    width: fit-content !important;
+                    flex: unset;
+                }
+                div[data-testid="column"] * {
+                    width: fit-content !important;
+                }
+            </style>
+            """, unsafe_allow_html=True)
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
     if sum(col_l) > 40 or (words.index(wrd)+1 == len(words)):
-        cols = st.columns([i + 4 for i in col_l])
+        cols = st.columns([1 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
             word_rating = 0
