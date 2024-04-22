@@ -11,8 +11,9 @@ from streamlit_js_eval import streamlit_js_eval
 
 st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
-st.write(f"Screen width is {streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')}")
+screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
 
+st.write(f"Screen width is {screen_width}")
 
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -283,7 +284,7 @@ st.markdown("""
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
-    if sum(col_l) > (40 * streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR') / 650) or (words.index(wrd)+1 == len(words)):
+    if sum(col_l) > (40 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
         cols = st.columns([1 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
