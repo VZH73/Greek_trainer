@@ -271,11 +271,10 @@ col1.button('Check', on_click=check_pressed)
 col2.button(':scissors:',on_click=clear_input)
 
 st.write('''<style>
-
 [data-testid="column"] {
-    width: calc(33.3333% - 1rem) !important;
+    width: fit-content !important;
     flex: 1 1 calc(33.3333% - 1rem) !important;
-    min-width: calc(33% - 1rem) !important;
+    min-width: fit-content !important;
 }
 </style>''', unsafe_allow_html=True)
 
