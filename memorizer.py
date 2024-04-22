@@ -42,8 +42,6 @@ def login(username, password):
     c.execute("SELECT * FROM users WHERE username=?", (username,))
     user = c.fetchone()
     if user and pbkdf2_sha256.verify(password, user[2]):
-        st.success("Login successful!")
-        st.write(f"Welcome back, {username}!")
         st.session_state.logged_in = True
         st.session_state.username = username
     else:
@@ -140,8 +138,7 @@ if 'incorrect_answers' not in st.session_state:
     st.session_state.incorrect_answers = 0
 
 if 'translation_input' not in st.session_state:
-    st.session_state.translation_input = ''
-    
+    st.session_state.translation_input = ''    
     
 def get_safe(k):
     try:
@@ -243,12 +240,12 @@ def fix_mobile_columns(col):
         min-width: fit-content !important;
     }
     </style>''', unsafe_allow_html=True)
-	
-st.write("""
-# Greek trainer
-This app helps to memorize **Greek** phrases!""")
+if screen_width > 500:
+    st.write("""
+    # Greek trainer
+    This app helps to memorize **Greek** phrases!""")
 
-st.subheader('Phrase translation')
+    st.subheader('Phrase translation')
 
 original, translation, words, greek_first = st.session_state.random_pair
 
@@ -278,14 +275,6 @@ st.text_input('Translation:', key='translation_input', on_change=submit, disable
 col1,col2,col3 = st.columns([2,1,15])
 col1.button('Check', on_click=check_pressed)
 col2.button(':scissors:',on_click=clear_input)
-
-#st.write('''<style>
-#[data-testid="column"] {
-#    width: fit-content !important;
-#    flex: 1 1 calc(20% - 1rem) !important;
-#    min-width: fit-content !important;
-#}
-#</style>''', unsafe_allow_html=True)
 
 st.markdown("""
             <style>
