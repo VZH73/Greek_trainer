@@ -236,11 +236,11 @@ if 'check' not in st.session_state:
     st.session_state.check = 1
 
 def fix_mobile_columns(col):    
-    st.write(f'''<style>
+    st.write('''<style>
     [data-testid="column"] {
-        width: calc({100/col}% - 1rem) !important;
-        flex: 1 1 calc({100/col}% - 1rem) !important;
-        min-width: calc({100/col}% - 1rem) !important;
+        width: calc(''' + str(100/col) + '''% - 1rem) !important;
+        flex: 1 1 calc(''' + str(100/col) + '''% - 1rem) !important;
+        min-width: calc(''' + str(100/col) + '''% - 1rem) !important;
     }
     </style>''', unsafe_allow_html=True)
 	
