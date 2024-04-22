@@ -317,7 +317,7 @@ for wrd in words:
                 cols[words.index(w)].button(w, key=w,  on_click=put_word, args=[w])
         words = words[words.index(wrd)+1:]
         col_l = []
-	fix_mobile_columns()
+        fix_mobile_columns()
             
 st.write(f'Previous Phrase: {st.session_state.this_original}')
 st.write(f'Correct Translation: {st.session_state.correct_translation}')
