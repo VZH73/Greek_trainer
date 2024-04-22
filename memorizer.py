@@ -278,7 +278,9 @@ with col1:
     with stylable_container(key="my_unique_button",css_styles="""
     {	
         [data-testid="baseButton-secondary"] {
-            background-color: red;
+            background-color: green;
+	    color: white;
+	    border-radius: 20px;
         }
     }
     """,):
