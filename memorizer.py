@@ -240,7 +240,7 @@ def fix_mobile_columns(col):
     [data-testid="column"] {
         width: calc(''' + str(100/col) + '''% - 1rem) !important;
         flex: 1 1 calc(''' + str(100/col) + '''% - 1rem) !important;
-        min-width: calc(''' + str(100/col) + '''% - 1rem) !important;
+        min-width: fit-content !important;
     }
     </style>''', unsafe_allow_html=True)
 	
