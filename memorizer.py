@@ -16,7 +16,7 @@ st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 if 'screen_width' not in st.session_state:
     st.session_state.screen_width = 0
 	
-st.session_state.screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
+st.session_state.screen_width = int(streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR'))
 st.write(st.session_state.screen_width)
 	
 if 'logged_in' not in st.session_state:
