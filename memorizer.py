@@ -14,7 +14,8 @@ from streamlit_extras.stylable_container import stylable_container
 st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
 screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
-
+st.write(screen_width)
+	
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
