@@ -10,14 +10,9 @@ from passlib.hash import pbkdf2_sha256
 from streamlit_js_eval import streamlit_js_eval
 from streamlit_extras.stylable_container import stylable_container
 
-
 st.set_page_config(page_title="Greek phrase memorizer")#, layout="wide")
 
-if 'screen_width' not in st.session_state:
-    st.session_state.screen_width = 0
-	
-st.session_state.screen_width = int(streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR'))
-st.write(st.session_state.screen_width)
+screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key = 'SCR')
 	
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -245,7 +240,7 @@ def fix_mobile_columns(col):
     }
     </style>''', unsafe_allow_html=True)
 
-if st.session_state.screen_width > 500:
+if screen_width > 500:
     st.write("""
     # Greek trainer
     This app helps to memorize **Greek** phrases!""")
@@ -305,7 +300,7 @@ st.markdown("""
 col_l = []
 for wrd in words:
     col_l.append(len(wrd))
-    if sum(col_l) > (45 * st.session_state.screen_width / 650) or (words.index(wrd)+1 == len(words)):
+    if sum(col_l) > (45 * screen_width / 650) or (words.index(wrd)+1 == len(words)):
         cols = st.columns([1 for i in col_l])
 
         for w in words[:words.index(wrd)+1]:
